@@ -1,0 +1,17 @@
+[
+  {
+    "firstname": "Alice",
+    "lastname": "Dupont",
+    "isActive": true
+  },
+  {
+    "firstname": "Bob",
+    "lastname": "Martin",
+    "isActive": false
+  },
+  {
+    "firstname": "Charlie",
+    "lastname": "Durand",
+    "isActive": true
+  }
+]
