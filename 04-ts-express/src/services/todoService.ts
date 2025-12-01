@@ -1,11 +1,41 @@
-import { Todo, CreateTodoDto, UpdateTodoDto } from '../models/todo.model';
+import { Todo, CreateTodoDto, UpdateTodoDto, TodoFilters, PaginatedTodoResponse } from '../models/todo.model';
 import { readTodos, writeTodos } from '../utils/fileStorage';
 
 export class TodoService {
 
-  // Récupérer tous les todos
-  getAllTodos(): Todo[] {
-    return readTodos();
+  // Récupérer tous les todos avec filtrage et pagination
+  getAllTodos(filters?: TodoFilters): PaginatedTodoResponse {
+    let todos = readTodos();
+
+    // Filtrage par statut completed
+    if (filters?.completed !== undefined) {
+      todos = todos.filter(todo => todo.completed === filters.completed);
+    }
+
+    // Calculer le total avant pagination
+    const total = todos.length;
+
+    // Pagination
+    const page = filters?.page || 1;
+    const limit = filters?.limit || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+
+    // Extraire la page demandée
+    const paginatedTodos = todos.slice(startIndex, endIndex);
+
+    // Calculer le nombre total de pages
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: paginatedTodos,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages
+      }
+    };
   }
 
   // Récupérer un todo par son ID
