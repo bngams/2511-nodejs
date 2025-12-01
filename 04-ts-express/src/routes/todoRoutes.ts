@@ -8,11 +8,11 @@ const todoController = new TodoController();
 
 // Routes CRUD
 // IMPORTANT: La route /search doit être AVANT /:id pour éviter que "search" soit interprété comme un ID
-router.get('/search', (req, res) => todoController.searchTodos(req, res));
-router.get('/', (req, res) => todoController.getAllTodos(req, res));
-router.get('/:id', (req, res) => todoController.getTodoById(req, res));
-router.post('/', validateRequest(createTodoSchema), (req, res) => todoController.createTodo(req, res));
-router.put('/:id', validateRequest(updateTodoSchema), (req, res) => todoController.updateTodo(req, res));
-router.delete('/:id', (req, res) => todoController.deleteTodo(req, res));
+router.get('/search', (req, res, next) => todoController.searchTodos(req, res, next));
+router.get('/', (req, res, next) => todoController.getAllTodos(req, res, next));
+router.get('/:id', (req, res, next) => todoController.getTodoById(req, res, next));
+router.post('/', validateRequest(createTodoSchema), (req, res, next) => todoController.createTodo(req, res, next));
+router.put('/:id', validateRequest(updateTodoSchema), (req, res, next) => todoController.updateTodo(req, res, next));
+router.delete('/:id', (req, res, next) => todoController.deleteTodo(req, res, next));
 
 export default router;

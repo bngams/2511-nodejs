@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../errors/AppError';
 
 // Middleware pour logger les requêtes
 export const requestLogger = (
@@ -18,10 +19,22 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  console.error('Erreur:', err.stack);
+  // Vérifier si c'est une erreur opérationnelle de notre application
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      statusCode: err.statusCode,
+      message: err.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
+    return;
+  }
 
+  // Erreur inattendue - logger et retourner 500
+  console.error('Erreur inattendue:', err.stack);
+  
   res.status(500).json({
-    message: 'Une erreur est survenue',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    statusCode: 500,
+    message: 'Une erreur interne est survenue',
+    ...(process.env.NODE_ENV === 'development' && { error: err.message, stack: err.stack })
   });
 };

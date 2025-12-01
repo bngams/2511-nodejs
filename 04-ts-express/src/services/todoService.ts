@@ -1,5 +1,6 @@
 import { Todo, CreateTodoDto, UpdateTodoDto, TodoFilters, PaginatedTodoResponse } from '../models/todo.model';
 import { readTodos, writeTodos } from '../utils/fileStorage';
+import { NotFoundError } from '../errors/AppError';
 
 export class TodoService {
 
@@ -39,9 +40,15 @@ export class TodoService {
   }
 
   // Récupérer un todo par son ID
-  getTodoById(id: number): Todo | undefined {
+  getTodoById(id: number): Todo {
     const todos = readTodos();
-    return todos.find(todo => todo.id === id);
+    const todo = todos.find(todo => todo.id === id);
+    
+    if (!todo) {
+      throw new NotFoundError(`Todo avec l'id ${id} non trouvé`);
+    }
+    
+    return todo;
   }
 
   // Créer un nouveau todo
@@ -67,12 +74,12 @@ export class TodoService {
   }
 
   // Mettre à jour un todo
-  updateTodo(id: number, data: UpdateTodoDto): Todo | null {
+  updateTodo(id: number, data: UpdateTodoDto): Todo {
     const todos = readTodos();
     const index = todos.findIndex(todo => todo.id === id);
 
     if (index === -1) {
-      return null;
+      throw new NotFoundError(`Todo avec l'id ${id} non trouvé`);
     }
 
     todos[index] = {
@@ -86,17 +93,16 @@ export class TodoService {
   }
 
   // Supprimer un todo
-  deleteTodo(id: number): boolean {
+  deleteTodo(id: number): void {
     const todos = readTodos();
     const index = todos.findIndex(todo => todo.id === id);
 
     if (index === -1) {
-      return false;
+      throw new NotFoundError(`Todo avec l'id ${id} non trouvé`);
     }
 
     todos.splice(index, 1);
     writeTodos(todos);
-    return true;
   }
 
   // Rechercher des todos par texte

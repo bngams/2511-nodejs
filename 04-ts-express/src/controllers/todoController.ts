@@ -1,12 +1,13 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { TodoService } from '../services/todoService';
 import { CreateTodoDto, UpdateTodoDto, TodoFilters } from '../models/todo.model';
+import { ValidationError } from '../errors/AppError';
 
 const todoService = new TodoService();
 
 export class TodoController {
 
-  getAllTodos(req: Request, res: Response): void {
+  getAllTodos(req: Request, res: Response, next: NextFunction): void {
     try {
       // Extraire les query parameters
       const filters: TodoFilters = {};
@@ -37,33 +38,26 @@ export class TodoController {
       const result = todoService.getAllTodos(filters);
       res.json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 
-  getTodoById(req: Request, res: Response): void {
+  getTodoById(req: Request, res: Response, next: NextFunction): void {
     try {
       const id = parseInt(req.params.id);
 
       if (isNaN(id)) {
-        res.status(400).json({ message: 'ID invalide' });
-        return;
+        throw new ValidationError('ID invalide');
       }
 
       const todo = todoService.getTodoById(id);
-
-      if (!todo) {
-        res.status(404).json({ message: 'Todo non trouvé' });
-        return;
-      }
-
       res.json(todo);
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 
-  createTodo(req: Request, res: Response): void {
+  createTodo(req: Request, res: Response, next: NextFunction): void {
     try {
       // La validation est maintenant gérée par le middleware validateRequest
       const data: CreateTodoDto = req.body;
@@ -71,63 +65,48 @@ export class TodoController {
       const newTodo = todoService.createTodo(data);
       res.status(201).json(newTodo);
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 
-  updateTodo(req: Request, res: Response): void {
+  updateTodo(req: Request, res: Response, next: NextFunction): void {
     try {
       const id = parseInt(req.params.id);
       const data: UpdateTodoDto = req.body;
 
       if (isNaN(id)) {
-        res.status(400).json({ message: 'ID invalide' });
-        return;
+        throw new ValidationError('ID invalide');
       }
 
       const updatedTodo = todoService.updateTodo(id, data);
-
-      if (!updatedTodo) {
-        res.status(404).json({ message: 'Todo non trouvé' });
-        return;
-      }
-
       res.json(updatedTodo);
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 
-  deleteTodo(req: Request, res: Response): void {
+  deleteTodo(req: Request, res: Response, next: NextFunction): void {
     try {
       const id = parseInt(req.params.id);
 
       if (isNaN(id)) {
-        res.status(400).json({ message: 'ID invalide' });
-        return;
+        throw new ValidationError('ID invalide');
       }
 
-      const deleted = todoService.deleteTodo(id);
-
-      if (!deleted) {
-        res.status(404).json({ message: 'Todo non trouvé' });
-        return;
-      }
-
+      todoService.deleteTodo(id);
       res.json({ message: 'Todo supprimé avec succès' });
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 
-  searchTodos(req: Request, res: Response): void {
+  searchTodos(req: Request, res: Response, next: NextFunction): void {
     try {
       const query = req.query.q as string;
 
       // Vérifier que le paramètre q existe
       if (!query) {
-        res.status(400).json({ message: 'Le paramètre de recherche "q" est requis' });
-        return;
+        throw new ValidationError('Le paramètre de recherche "q" est requis');
       }
 
       const results = todoService.searchTodos(query);
@@ -138,7 +117,7 @@ export class TodoController {
         results
       });
     } catch (error) {
-      res.status(500).json({ message: 'Erreur serveur', error });
+      next(error);
     }
   }
 }
