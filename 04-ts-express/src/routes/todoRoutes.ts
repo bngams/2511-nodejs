@@ -7,6 +7,8 @@ const router = Router();
 const todoController = new TodoController();
 
 // Routes CRUD
+// IMPORTANT: La route /search doit être AVANT /:id pour éviter que "search" soit interprété comme un ID
+router.get('/search', (req, res) => todoController.searchTodos(req, res));
 router.get('/', (req, res) => todoController.getAllTodos(req, res));
 router.get('/:id', (req, res) => todoController.getTodoById(req, res));
 router.post('/', validateRequest(createTodoSchema), (req, res) => todoController.createTodo(req, res));

@@ -119,4 +119,26 @@ export class TodoController {
       res.status(500).json({ message: 'Erreur serveur', error });
     }
   }
+
+  searchTodos(req: Request, res: Response): void {
+    try {
+      const query = req.query.q as string;
+
+      // Vérifier que le paramètre q existe
+      if (!query) {
+        res.status(400).json({ message: 'Le paramètre de recherche "q" est requis' });
+        return;
+      }
+
+      const results = todoService.searchTodos(query);
+      
+      res.json({
+        query,
+        count: results.length,
+        results
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Erreur serveur', error });
+    }
+  }
 }

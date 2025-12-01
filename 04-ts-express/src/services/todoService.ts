@@ -98,4 +98,16 @@ export class TodoService {
     writeTodos(todos);
     return true;
   }
+
+  // Rechercher des todos par texte
+  searchTodos(query: string): Todo[] {
+    const todos = readTodos();
+    const searchTerm = query.toLowerCase();
+
+    // Filtrer les todos où title OU description contient le terme de recherche
+    return todos.filter(todo => 
+      todo.title.toLowerCase().includes(searchTerm) || 
+      todo.description.toLowerCase().includes(searchTerm)
+    );
+  }
 }
