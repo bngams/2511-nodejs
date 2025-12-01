@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/AppError';
+import { AppError, UnknownError } from '../errors/AppError';
 
 // Middleware pour logger les requêtes
 export const requestLogger = (
@@ -21,20 +21,10 @@ export const errorHandler = (
 ): void => {
   // Vérifier si c'est une erreur opérationnelle de notre application
   if (err instanceof AppError) {
-    res.status(err.statusCode).json({
-      statusCode: err.statusCode,
-      message: err.message,
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    });
+    err.sendHttpResponse(res); // send the formatted error response
     return;
   }
 
-  // Erreur inattendue - logger et retourner 500
-  console.error('Erreur inattendue:', err.stack);
+  new UnknownError('Une erreur interne est survenue').sendHttpResponse(res);
   
-  res.status(500).json({
-    statusCode: 500,
-    message: 'Une erreur interne est survenue',
-    ...(process.env.NODE_ENV === 'development' && { error: err.message, stack: err.stack })
-  });
 };
