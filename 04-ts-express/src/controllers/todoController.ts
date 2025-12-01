@@ -39,12 +39,8 @@ export class TodoController {
 
   createTodo(req: Request, res: Response): void {
     try {
+      // La validation est maintenant gérée par le middleware validateRequest
       const data: CreateTodoDto = req.body;
-
-      if (!data.title || !data.description) {
-        res.status(400).json({ message: 'Title et description requis' });
-        return;
-      }
 
       const newTodo = todoService.createTodo(data);
       res.status(201).json(newTodo);
