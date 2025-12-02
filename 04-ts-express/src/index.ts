@@ -1,9 +1,10 @@
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 // On s'assure que les variables d'environnement sont chargées avant toute autre chose
-dotenv.config(); 
+dotenv.config();
 import cors from 'cors';
 import todoRoutes from './routes/todoRoutes';
+import authRoutes from './routes/authRoutes';
 import { errorHandler, requestLogger } from './middlewares/errorHandler';
 
 
@@ -33,6 +34,9 @@ app.get('/', (req: Request, res: Response) => {
 
 // Routes todos
 app.use('/todos', todoRoutes);
+
+// Routes auth
+app.use('/auth', authRoutes);
 
 // 404
 app.use((req: Request, res: Response) => {
