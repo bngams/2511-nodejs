@@ -8,6 +8,7 @@ const todoController = new TodoController();
 
 // Routes CRUD
 // IMPORTANT: La route /search doit être AVANT /:id pour éviter que "search" soit interprété comme un ID
+router.get('/db', (req, res, next) => todoController.getAllTodosFromDB(req, res, next));
 router.get('/search', (req, res, next) => todoController.searchTodos(req, res, next));
 router.get('/', (req, res, next) => todoController.getAllTodos(req, res, next));
 router.get('/:id', (req, res, next) => todoController.getTodoById(req, res, next));

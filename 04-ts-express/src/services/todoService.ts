@@ -1,8 +1,19 @@
 import { Todo, CreateTodoDto, UpdateTodoDto, TodoFilters, PaginatedTodoResponse } from '../models/todo.model';
 import { readTodos, writeTodos } from '../utils/fileStorage';
 import { NotFoundError } from '../errors/AppError';
+import { getAllTodosQuery } from '../dal/todoDAL';
 
 export class TodoService {
+
+  async getAllTodosFromDB() {
+    try {
+      const todosRows = await getAllTodosQuery;
+      return todosRows;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Erreur lors de la récupération des todos depuis la base de données');
+    }
+  }
 
   // Récupérer tous les todos avec filtrage et pagination
   getAllTodos(filters?: TodoFilters): PaginatedTodoResponse {

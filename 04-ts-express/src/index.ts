@@ -1,11 +1,12 @@
 import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
+// On s'assure que les variables d'environnement sont chargées avant toute autre chose
+dotenv.config(); 
 import cors from 'cors';
 import todoRoutes from './routes/todoRoutes';
 import { errorHandler, requestLogger } from './middlewares/errorHandler';
 
-// Charger les variables d'environnement
-dotenv.config();
+
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;

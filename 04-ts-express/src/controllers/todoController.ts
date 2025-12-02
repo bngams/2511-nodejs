@@ -6,6 +6,15 @@ import { ValidationError } from '../errors/AppError';
 const todoService = new TodoService();
 
 export class TodoController {
+  
+  async getAllTodosFromDB(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const todos = await todoService.getAllTodosFromDB();
+      res.json(todos);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   getAllTodos(req: Request, res: Response, next: NextFunction): void {
     try {
