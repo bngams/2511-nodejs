@@ -120,4 +120,25 @@ describe('TodoService', () => {
       expect(result[0].title).toBe('Call dentist');
     });
   });
+
+  describe('getTodoById', () => {
+    it('should return the correct todo by ID', () => {
+      mockedReadTodos.mockReturnValue(mockTodos);
+
+      const result = todoService.getTodoById(2);
+
+      expect(result).toBeDefined();
+      expect(result.id).toBe(2);
+      expect(result.title).toBe('Complete project');
+    });
+
+    it('should throw NotFoundError for non-existing ID', () => {
+      mockedReadTodos.mockReturnValue(mockTodos);
+
+      expect(() => {
+        todoService.getTodoById(999);
+      }).toThrow('Todo avec l\'id 999 non trouvé');
+    });
+    
+  });
 });
